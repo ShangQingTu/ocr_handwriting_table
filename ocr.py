@@ -57,7 +57,7 @@ language = "en"
 location = "true"
 
 
-def process(picFilePath, savePath):
+def process(picFilePath):
     resName = picFilePath.split('/')[-1][:-4]
     # headers=getHeader(language, location)
     r = requests.post(URL, headers=getHeader(), data=getBody(picFilePath))
@@ -79,12 +79,12 @@ def process(picFilePath, savePath):
         lineContent = " ".join(wordList)
         print(lineContent)
         lines.append(lineContent)
-
-    with open(savePath + "/" + resName + ".txt", "w") as res_w:
-        for line in lines:
-            if line[-1] != "\n":
-                line = line + "\n"
-            res_w.write(line)
+    return "\n".join(lines)
+    # with open(savePath + "/" + resName + ".txt", "w") as res_w:
+    #     for line in lines:
+    #         if line[-1] != "\n":
+    #             line = line + "\n"
+    #         res_w.write(line)
 
 
 def readImg(picFilePath):
@@ -92,6 +92,7 @@ def readImg(picFilePath):
     cv2.imshow("handwriting", Img)
     cv2.waitKey(2000)
     cv2.destroyAllWindows()
+
 
 def ocrFrom(dicName):
     cutImg_path = './slice/' + dicName
@@ -103,7 +104,8 @@ def ocrFrom(dicName):
             os.mkdir(savePath)
         process(picFilePath, savePath)
 
-if __name__ == '__main__':
-    dicName = '工作票.'
-    ocrFrom(dicName)
 
+if __name__ == '__main__':
+    picFilePath = "result/cut/工作票/3/4_1.png"
+    string = process(picFilePath)
+    print(string)

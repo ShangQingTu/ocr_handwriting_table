@@ -1,5 +1,4 @@
-from ocr import ocrFrom
-from extractTable import extractTableFrom
+from Picture import work
 from pdf2png import pdfConvert
 import os
 
@@ -11,10 +10,9 @@ def main(pdf_position='pdfs'):
     for pdfName in os.listdir("./" + pdf_position):
         # dicName是pdf去掉后缀的名字
         dicName = pdfName[:-4]
-        # 从./data/xx/yy.png里面提取出若干个表格yy_zz.png,存进./slice/xx文件夹
-        extractTableFrom(dicName)
-        # 对于这些表格图片,用讯飞ocr的接口提取出文字,存进./result/xx文件夹
-        ocrFrom(dicName)
+        # 从./data/xx/yy.png里面提取出若干个表格yy_zz.png,存进./result/cut/xx文件夹
+        work(dicName)
+
 
 
 if __name__ == '__main__':

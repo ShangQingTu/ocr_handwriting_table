@@ -7,6 +7,7 @@ from imutils.perspective import four_point_transform
 
 def FindContours(img_path):
     src_img = cv2.imread(img_path)
+    #二值化
     src_img0 = cv2.cvtColor(src_img, cv2.COLOR_BGR2GRAY)
     src_img0 = cv2.GaussianBlur(src_img0,(3,3),0)
     src_img1 = cv2.bitwise_not(src_img0)
@@ -38,7 +39,7 @@ def FindContours(img_path):
     cv2.imshow("Net_img", Net_img)
     cv2.waitKey(10)
     cv2.destroyAllWindows()
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     #=========================绘出所有轮廓=========================
     # IMG = cv2.drawContours(src_img0, contours, -1, (0, 255, 255), 2)
@@ -67,7 +68,7 @@ def get_Affine_Location(src_img,Net_img,contours,cutImg_name,cutImg_path):
         cut_img = src_img[y1:y1+h1,x1:x1+w1]
         cv2.imwrite(cutImg_path+'/'+cutImg_name+'_'+str(i)+'.png',cut_img)      # 保存截取的图片
         cv2.imshow('src_img_'+str(i),src_img1)
-        cv2.waitKey(10)
+        cv2.waitKey(10000)
     cv2.destroyAllWindows()
 
     # =========================绘出最大轮廓凸包并矫正图像==========================
@@ -103,6 +104,6 @@ def extractTableFrom(dicName):
         get_Affine_Location(src_img, Net_img, contours, cutImg_name, cutImg_path)
 
 if __name__ == '__main__':
-    dicName = '操作票.'
+    dicName = '操作票'
     extractTableFrom(dicName)
 
