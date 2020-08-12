@@ -106,6 +106,6 @@ def ocrFrom(dicName):
 
 
 if __name__ == '__main__':
-    picFilePath = "result/cut/工作票/3/4_1.png"
+    picFilePath = "result/cut/工作票/4/7_0.png"
     string = process(picFilePath)
     print(string)

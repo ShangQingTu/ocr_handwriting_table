@@ -25,8 +25,10 @@ class Picture():
         # 最长行,最长列的坐标
         self.longest_row, self.longest_col = self.get_longest()
         # 定下坐标标准,为excel分格子做依据, 过滤孤立点,得到网格
-        self.standard_x_locations = [x[0] for x in self.longest_row]
-        self.standard_y_locations = [x[1] for x in self.longest_col]
+        self.standard_x_locations = sorted([x[0] for x in self.longest_row])
+        # self.standard_x_locations = self.standard_x_locations.sort()
+        self.standard_y_locations = sorted([x[1] for x in self.longest_col])
+        # self.standard_y_locations = self.standard_y_locations.sort()
         print("standard_x_locations", self.standard_x_locations)
         print("standard_y_locations", self.standard_y_locations)
 
@@ -89,16 +91,16 @@ class Picture():
                     print(save_path)
                     cv2.imwrite(save_path, cut_img)  # 保存截取的图片
                     # 在单元格里写入图片
-                    # worksheet.insert_image(2 * i + 1, 3 * j + 1,
-                    #                        save_path,
-                    #                        {'x_scale': 0.5, 'y_scale': 0.5})
+                    worksheet.insert_image(2 * i + 1, 3 * j + 1,
+                                           save_path,
+                                           {'x_scale': 0.5, 'y_scale': 0.5})
                     # 在单元格里写入识别字
                     word = process(save_path)
-                    # worksheet.write(2 * i + 1, 3 * j + 2, word)
-                    worksheet.write(2 * i + 1, 2 * j + 1, word)
+                    worksheet.write(2 * i + 1, 3 * j + 2, word)
+                    # worksheet.write(2 * i + 1, 2 * j + 1, word)
                 # 在单元格里写入对应的坐标值
-                # worksheet.write(2 * i, 3 * j, label)
-                worksheet.write(2 * i, 2 * j, label)
+                worksheet.write(2 * i, 3 * j, label)
+                # worksheet.write(2 * i, 2 * j, label)
 
         workbook.close()  # 保存文件
 
@@ -125,4 +127,4 @@ def work(dicName):
 
 
 if __name__ == '__main__':
-    work("工作票")
+    work("操作票")
