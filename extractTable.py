@@ -21,6 +21,17 @@ def FindContours(img_path):
     horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontalSize, 1))
     horizontal = cv2.erode(horizontal, horizontalStructure)
     horizontal = cv2.dilate(horizontal, horizontalStructure)
+    row_locations = []
+    # TODO
+    #这样遍历会有点慢?
+    for row in range(len(horizontal)):
+        for col in range(len(horizontal[row])):
+            if horizontal[row][col]!=0:
+                print("r{},c{}".format(row,col))
+                row_locations.append(row)
+                break
+    print(row_locations)
+
     cv2.imshow("horizontal", horizontal)
     cv2.waitKey(10)
 
@@ -47,7 +58,7 @@ def FindContours(img_path):
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     #=============================================================
-    return src_img,Net_img,contours
+    return src_img,Net_img,contours,row_locations
 
 def get_Affine_Location(src_img,Net_img,contours,cutImg_name,cutImg_path):
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
@@ -100,7 +111,7 @@ def extractTableFrom(dicName):
         cutImg_name = input_Path.split('/')[-1][:-4]
         print(input_Path)
         print(cutImg_name)
-        src_img, Net_img, contours = FindContours(input_Path)
+        src_img, Net_img, contours,row_locations = FindContours(input_Path)
         get_Affine_Location(src_img, Net_img, contours, cutImg_name, cutImg_path)
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ isolat_thres = 10
 same_col_thres = 10
 same_row_thres = 10
 
+
 def make_points(xs, ys):
     points = []
     for i in range(len(ys)):
@@ -13,12 +14,14 @@ def make_points(xs, ys):
         points.append((x, y))
     return points
 
+
 def count_distence(point1, point2):
     x1 = point1[0]
     x2 = point2[0]
     y1 = point1[1]
     y2 = point2[1]
     return pow(pow(x1 - x2, 2) + pow(y1 - y2, 2), 0.5)
+
 
 def clustering(points):
     # 记录相近点的所有类
@@ -36,6 +39,7 @@ def clustering(points):
                 checked_points.append(point2)
         clusts.append(clust)
     return clusts
+
 
 def clust_columns(clust_center_points):
     # 找出同一列的点
@@ -57,7 +61,7 @@ def clust_columns(clust_center_points):
     return col_points
 
 
-def clust_rows(clust_center_points):
+def clust_rows(clust_center_points, hasxy=True):
     # 找出同一行的点
     row_points = []
     checked_points = []
@@ -68,7 +72,10 @@ def clust_rows(clust_center_points):
         row = []
         for point2 in clust_center_points:
             # y方向距离
-            distence = abs(point[1] - point2[1])
+            if hasxy:
+                distence = abs(point[1] - point2[1])
+            else:
+                distence = abs(point - point2)
             if distence < same_row_thres:
                 row.append(point2)
                 checked_points.append(point2)
