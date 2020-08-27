@@ -86,6 +86,18 @@ class Picture():
             if abs(clust_row[i][0] - self.standard_y_locations[-1]) < same_row_thres:
                 return i + 1
 
+    def get_col_loc4row(self, row_num):
+        # 对于第几行的列坐标是那些
+        row_loc = self.standard_y_locations[row_num]
+        col_locs = []
+        for row in self.row_points:
+            # 第一个点y做代表
+            if abs(row[0][1] - row_loc) < same_row_thres:
+                # 同一行的点的x坐标
+                for point in row:
+                    col_locs.append(point[0])
+                return col_locs
+
     def wirte_excel(self, filepath, dicName, cutImg_name, clust_row):
         # 保存cut
         pdfName_path = os.path.join(filepath, "cut", dicName)
@@ -100,39 +112,44 @@ class Picture():
         worksheet = workbook.add_worksheet()
         # 表格之上,有 整间隔 + 1行
         upper_line_num = self.get_upper_line_num(clust_row)
-        if upper_line_num != 1:
-            # 等于一说明表格最上面就是图片最上面
-            interval = clust_row[1][0] - clust_row[0][0]
-            # 实际上是从最上一条线上面的内容行开始的,相当于多画了upper_line_num行
-            upper_start_y = clust_row[0][0] - interval
-            for i in range(upper_line_num):
-                if i == upper_line_num - 1:
-                    next_line_y = self.standard_y_locations[0]
-                else:
-                    next_line_y = clust_row[i][0]
-                cut_img = self.img[upper_start_y:next_line_y, :]
-                save_path = cutImg_path + '/' + str(i) + '.png'
-                cv2.imwrite(save_path, cut_img)  # 保存截取的图片
-                worksheet.insert_image(2 * i + 1, 1,
-                                       save_path,
-                                       {'x_scale': 0.5, 'y_scale': 0.5})
-                word = process(save_path)
-                worksheet.write(2 * i + 1, 2, word)
-                # 在单元格里写入对应的坐标值
-                label = "(%d,%d)" % (0, upper_start_y)
-                worksheet.write(2 * i, 1, label)
-                upper_start_y = next_line_y
+        # if upper_line_num != 1:
+        # 等于一说明表格最上面就是图片最上面
+        interval = clust_row[1][0] - clust_row[0][0]
+        # 实际上是从最上一条线上面的内容行开始的,相当于多画了upper_line_num行
+        upper_start_y = clust_row[0][0] - interval
+        for i in range(upper_line_num):
+            if i == upper_line_num - 1:
+                next_line_y = self.standard_y_locations[0]
+            else:
+                next_line_y = clust_row[i][0]
+            cut_img = self.img[upper_start_y:next_line_y, :]
+            save_path = cutImg_path + '/' + str(i) + '.png'
+            cv2.imwrite(save_path, cut_img)  # 保存截取的图片
+            worksheet.insert_image(2 * i + 1, 0,
+                                   save_path,
+                                   {'x_scale': 0.5, 'y_scale': 0.5})
+            word = process(save_path)
+            worksheet.write(2 * i + 1, 1, word)
+            # 在单元格里写入对应的坐标值
+            label = "(%d,%d)" % (0, upper_start_y)
+            worksheet.write(2 * i, 0, label)
+            upper_start_y = next_line_y
         # 多画了upper_line_num行
         self.row_max_num += upper_line_num
         # 表格
         print("row_num", self.row_max_num)
         for i in range(upper_line_num, self.row_max_num):
-            for j in range(self.col_max_num):
-                x0 = self.standard_x_locations[j]
+            if i == self.row_max_num - 1:
+                break
+            col_locs = sorted(self.get_col_loc4row(i - upper_line_num))
+            print("col_locs,", col_locs)
+            col_num = len(col_locs)
+            for j in range(col_num):
+                x0 = col_locs[j]
                 y0 = self.standard_y_locations[i - upper_line_num]
                 label = "(%d,%d)" % (x0, y0)
-                if i < self.row_max_num - 1 and j < self.col_max_num - 1:
-                    x1 = self.standard_x_locations[j + 1]
+                if i < self.row_max_num - 1 and j < col_num - 1:
+                    x1 = col_locs[j + 1]
                     y1 = self.standard_y_locations[i + 1 - upper_line_num]
                     print("x0,x1", x0, x1)
                     print("y0,y1", y0, y1)
@@ -161,17 +178,17 @@ class Picture():
             i = clust_number - first_under_line_i + self.row_max_num
             save_path = cutImg_path + '/' + str(i) + '.png'
             cv2.imwrite(save_path, cut_img)  # 保存截取的图片
-            worksheet.insert_image(2 * i + 1, 1,
+            worksheet.insert_image(2 * i + 1, 0,
                                    save_path,
                                    {'x_scale': 0.5, 'y_scale': 0.5})
             try:
                 word = process(save_path)
             except TypeError:
                 word = ""
-            worksheet.write(2 * i + 1, 2, word)
+            worksheet.write(2 * i + 1, 1, word)
             # 在单元格里写入对应的坐标值
             label = "(%d,%d)" % (0, under_start_y)
-            worksheet.write(2 * i, 1, label)
+            worksheet.write(2 * i, 0, label)
             under_start_y = next_line_y
         workbook.close()  # 保存文件
 
@@ -201,5 +218,5 @@ def work(dicName):
 
 
 if __name__ == '__main__':
-    # work("操作票")
-    work("工作票")
+    work("操作票")
+    # work("工作票")
