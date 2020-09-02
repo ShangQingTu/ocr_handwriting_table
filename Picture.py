@@ -148,6 +148,7 @@ class Picture():
                 x0 = col_locs[j]
                 y0 = self.standard_y_locations[i - upper_line_num]
                 label = "(%d,%d)" % (x0, y0)
+                #加了判断
                 if i < self.row_max_num - 1 and j < col_num - 1:
                     x1 = col_locs[j + 1]
                     y1 = self.standard_y_locations[i + 1 - upper_line_num]
